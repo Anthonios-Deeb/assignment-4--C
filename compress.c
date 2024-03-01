@@ -22,7 +22,6 @@ char* intToBinary(int number) {
   return binaryString;
 }
 
-
 int encode(char *temp){
   FILE *fptr;
   char* name;
@@ -63,6 +62,57 @@ int encode(char *temp){
   return 0;
 }
 
-int decode(FILE *fptr){
+int binaryToInt(char *binaryNotString) {
+  if (binaryNotString == NULL || strlen(binaryNotString) != 4) {
+    fprintf(stderr, "Invalid input\n");
+    return -1; 
+  }
+
+  int result = 0;
+  for (int i = 0; i < 4; i++) {
+    if (binaryNotString[i] == '0') {
+      result = result * 2 + 1;  
+    } else if (binaryNotString[i] == '1') {
+      result = result * 2 + 0;  
+    } else {
+      fprintf(stderr, "Invalid character in input\n");
+      return -1; 
+    }
+  }
+  return result;
+}
+
+int decode(char *temp){
+  FILE *fptr;
+  char* name;
+  name=(char*)malloc(strlen(temp)+5);
+  strcpy(name,temp);
+  sprintf(name, "%s.bin", name);
+  if ((fptr = fopen(name, "rb")) == NULL){
+    printf("Unable to open file\n");
+    return 0;
+  }
+
+  FILE *dest;
+  int num;
+  char c[5];
+  int count=0;
+  
+  name[strlen(name)-1]='t';
+  name[strlen(name)-2]='x';
+  name[strlen(name)-3]='t';
+
+  dest= (fopen(name, "w"));
+
+  while(fread(c,sizeof(int),1,fptr)==1){
+    c[4]='\0';
+    num=binaryToInt(c);
+    if(num<=9&&num>=0){
+      fprintf(dest, "%d",num);
+    }
+  }
+  fclose(fptr);
+  fclose(dest);
+  free(name);
   return 0;
 }
